@@ -109,7 +109,6 @@ class HOTBot(object):
     def __init__(self, event, flags=None):
         self.flags = flags
         self.service = None
-        self.main_conf = jsonconf("main.json")
         self.event = event
         conf_dir = self.get_conf_dir()
         self.event_conf = jsonconf(os.path.join(conf_dir, self.event + ".json"))
