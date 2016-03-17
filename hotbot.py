@@ -24,6 +24,7 @@ import argparse
 from jsonconf import jsonconf
 import uuid
 from random import randint
+from croniter import croniter
 
 import logging
 
@@ -221,6 +222,68 @@ class HOTBot(object):
         info['guest_count'] = len(self.event_conf.guests)
 
         return (key, loc, info)
+
+    def insert_events(self):
+        print('\nInsert event placeholders using cron format.'
+              '\nSee https://en.wikipedia.org/wiki/Cron format for details.')
+
+        loc_tag = default_input("Location Tag (enter for none)", default="")
+        if not loc_tag:
+            loc_tag = None
+
+        fmt = '%Y-%m-%d'
+        base = datetime.datetime.now()
+        def_base = base_str = base.strftime(fmt)
+
+        while True:
+            base_str = default_input("Start Date", default=def_base)
+            try:
+                base = datetime.datetime.strptime(base_str, fmt)
+            except:
+                print("Invalid Date Format! Use YYYY-MM-DD")
+                continue
+            break
+
+        count = def_count = 10
+        while True:
+            count = default_input("# Events to Insert", str(def_count))
+            try:
+                count = int(count)
+                if count < 1:
+                    raise Exception()  # lazy way to handle with less code
+            except:
+                print("Please enter a valid integer > 0!")
+                continue
+            break
+
+        cron_fmt = None
+        cron = None
+        events = []
+        event_objs = []
+        while True:
+            while True:
+                cron_fmt = default_input("Cron Expression", default=cron_fmt)
+                try:
+                    cron = croniter(cron_fmt, start_time=base)
+                except:
+                    print('\nInvalid Cron Expression!'
+                          '\nSee https://en.wikipedia.org/wiki/Cron format for examples.')
+                    continue
+                break
+
+            events = []
+            event_objs = []
+            for _ in range(count):
+                evt = cron.get_next(ret_type=datetime.datetime)
+                event_objs.append(evt)
+                events.append(evt.strftime(fmt + ' %H:%M'))
+            print("Events to be inserted: \n" + ", ".join(events))
+            resp = default_input("\nInsert Events (y) or Edit (e)?", default=None)
+            if resp.lower().startswith('y'):
+                break
+
+        for evt in event_objs:
+            self.inser_event_placeholder(evt, duration=120, loc_tag=loc_tag)
 
     def manage_messages(self):
         key = 'messages'
@@ -450,6 +513,37 @@ class HOTBot(object):
 
         return event_list
 
+    def inser_event_placeholder(self, start, duration=120, loc_tag=None):
+        if not self.authorized:
+            self.authorize()
+
+        tzone = self.service.settings().get(setting='timezone').execute()['value']
+
+        fmt = '%Y-%m-%dT%H:%M:00'
+        name = self.event
+        if loc_tag:
+            name += (":" + loc_tag)
+        name = "[" + name + "]"
+
+        end = start + datetime.timedelta(minutes=duration)
+
+        event = {
+            'summary': name,
+            'start': {
+                'dateTime': start.strftime(fmt),
+                'timeZone': tzone,
+            },
+            'end': {
+                'dateTime': end.strftime(fmt),
+                'timeZone': tzone,
+            }
+        }
+
+        print("Creating {}, {}...".format(name, start.strftime(fmt)))
+        res = self.service.events().insert(calendarId=self.event_conf.host_cal,
+                                           body=event).execute()
+        print("Created: {}".format(res.get('htmlLink')))
+
     def update_event(self, event, name, description, location):
         if not self.authorized:
             self.authorize()
@@ -485,6 +579,8 @@ def main(flags=None):
         bot.manage_messages()
     elif flags.select_cal:
         bot.select_host_calendar()
+    elif flags.ins_events:
+        bot.insert_events()
     else:
         events = bot.get_cal_events(days_future=flags.days)
         if len(events):
@@ -548,6 +644,10 @@ if __name__ == '__main__':
         "--select-cal", dest='select_cal',
         default=False, action='store_true',
         help="Select host calendar")
+    parser.add_argument(
+        "--ins-events", dest='ins_events',
+        default=False, action='store_true',
+        help="Insert event placeholders into calendar with cron formatting")
     flags = parser.parse_args()
 
     try:
