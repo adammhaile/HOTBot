@@ -246,13 +246,25 @@ class HOTBot(object):
 
         count = def_count = 10
         while True:
-            count = default_input("# Events to Insert", str(def_count))
+            count = default_input("# Events to Insert", default=str(def_count))
             try:
                 count = int(count)
                 if count < 1:
                     raise Exception()  # lazy way to handle with less code
             except:
                 print("Please enter a valid integer > 0!")
+                continue
+            break
+
+        duration = def_dur = 60
+        while True:
+            duration = default_input("Event Duration (min)", default=str(def_dur))
+            try:
+                duration = int(duration)
+                if duration < 10:
+                    raise Exception()
+            except:
+                print("Please enter a valid integer > 10!")
                 continue
             break
 
@@ -283,7 +295,7 @@ class HOTBot(object):
                 break
 
         for evt in event_objs:
-            self.inser_event_placeholder(evt, duration=120, loc_tag=loc_tag)
+            self.inser_event_placeholder(evt, duration=duration, loc_tag=loc_tag)
 
     def manage_messages(self):
         key = 'messages'
