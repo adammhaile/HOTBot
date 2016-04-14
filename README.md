@@ -1,6 +1,12 @@
 # HOTBot
 HOTBot is designed to automate the process of randomly selecting an event location from a pre-defined list and then sending out Google Calendar invites to a list of guests. It is very bare-bones and excepted to either be run manually or as a cron job for full automation.
 
+For example, the following cron entry will run hotbot daily at 7:30pm.
+
+```30 19 * * * hotbot --event EVENT_NAME```
+
+Running with just the --event option tells it to search Google Calendar for the next event and update it if one has been found within the desired range (7 days by default).
+
 # Installation
 
 First, make sure you have setuptools installed (you probably do):
