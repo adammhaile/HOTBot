@@ -99,7 +99,7 @@ If you use this sub-calendar ID as the "Guest email" entry, the invite will go d
 
 # Automatically Creating Events
 
-Using cron expressions, you can have HOTBot automatically insert calendar events into Google Calendar. This is particularly helpful since, as stated above in [Calendar Setup](#calendar_setup) it is not recommended to use the recurring event feature. Instead, this will insert completely individual events.
+Using cron expressions, you can have HOTBot automatically insert calendar events into Google Calendar. This is particularly helpful since, as stated above in [Calendar Setup](#calendar-setup) it is not recommended to use the recurring event feature. Instead, this will insert completely individual events.
 
 Run the following command:
 
@@ -111,7 +111,7 @@ It will then walk you through creating new event placeholders using a [cron expr
 
 This means 7pm, every Thursday.
 
-You will first be asked to enter a [location tag](#location_tags), if desired. All placeholders will then use that location tag.
+You will first be asked to enter a [location tag](#location-tags), if desired. All placeholders will then use that location tag.
 
 Next, choose the start date, which defaults to the current date. Anything in the YYYY-MM-DD format is valid.
 
