@@ -138,8 +138,8 @@ class HOTBot(object):
             flow = client.flow_from_clientsecrets(os.path.join(conf_dir, 'client_secret.json'),
                                                   'https://www.googleapis.com/auth/calendar')
             flow.user_agent = "HOTBot"
-            if flags:
-                credentials = tools.run_flow(flow, store, flags)
+            if self.flags:
+                credentials = tools.run_flow(flow, store, self.flags)
             else:  # Needed only for compatibility with Python 2.6
                 credentials = tools.run(flow, store)
             log.info('Storing credentials to ' + credential_path)

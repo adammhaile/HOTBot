@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='HOTBot',
-    version='1.0.0',
+    version='1.0.1',
     description='Dynamic, random, and automated event scheduler using Google Calendar',
     author='Adam Haile',
     author_email='email@adamhaile.net',
