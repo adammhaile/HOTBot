@@ -627,7 +627,8 @@ def main(flags=None):
                       .format(bot.event, flags.days))
             sys.exit(1)
 
-if __name__ == '__main__':
+
+def run_script():
     # can use --noauth_local_webserver to manually auth
     parser = argparse.ArgumentParser(description='HOTBot automated event scheduler',
                                      parents=[tools.argparser])
@@ -670,3 +671,6 @@ if __name__ == '__main__':
         log.exception("Fatal error occured in script: ")
     finally:
         logging.shutdown()
+
+if __name__ == '__main__':
+    run_script()
